@@ -43,7 +43,7 @@ public interface DishMapper {
      * @return
      */
     @Select("select count(id) from setmeal_dish where dish_id = #{id}")
-    int countDishBySetmealIds(Long ids);
+    int countDishBySetmealIds(Long id);
 
     /**
      * 根据菜品id查询菜品状态
@@ -51,7 +51,7 @@ public interface DishMapper {
      * @return
      */
     @Select("select status from dish where id = #{id}")
-    int countDishByStatus(Long ids);
+    int countDishByStatus(Long id);
 
     /**
      * 根据id删除菜品
@@ -74,4 +74,11 @@ public interface DishMapper {
      * @param dishIds
      */
     void deleteByDishIds(List<Long> dishIds);
+
+    /**
+     * 修改菜品
+     * @param dish
+     */
+    @AutoFull(value = OperationType.UPDATE)
+    void update(Dish dish);
 }

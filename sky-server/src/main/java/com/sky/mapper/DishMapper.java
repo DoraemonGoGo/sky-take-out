@@ -70,7 +70,7 @@ public interface DishMapper {
     Dish getById(Long id);
 
     /**
-     * 根据菜品id删除菜品
+     * 根据菜品id批量删除菜品
      * @param dishIds
      */
     void deleteByDishIds(List<Long> dishIds);
@@ -81,4 +81,18 @@ public interface DishMapper {
      */
     @AutoFull(value = OperationType.UPDATE)
     void update(Dish dish);
+
+    /**
+     * 根据分类id查询菜品
+     * @param dish
+     * @return
+     */
+    List<Dish> list(Dish dish);
+
+    /**
+     * 根据套餐id查询菜品
+     * @param id
+     * @return
+     */
+    List<Dish> getBySetmealId(Long id);
 }

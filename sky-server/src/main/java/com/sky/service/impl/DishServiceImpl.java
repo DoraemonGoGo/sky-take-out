@@ -80,7 +80,7 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
-     * 删除菜品
+     * 批量删除菜品
      *
      * @param ids
      */
@@ -97,7 +97,7 @@ public class DishServiceImpl implements DishService {
         }
 
         // 如果菜品关联套餐，则不能删除
-        List<Long> setmeals = setmealDishMapper.getSetmealBtDishId(ids);
+        List<Long> setmeals = setmealDishMapper.getSetmealByDishId(ids);
         if (setmeals != null && setmeals.size() > 0) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
@@ -154,5 +154,35 @@ public class DishServiceImpl implements DishService {
             }
             dishFlavorMapper.insertBatch(flavors);
         }
+    }
+
+    /**
+     * 启用禁用菜品状态
+     *
+     * @param status
+     * @param id
+     */
+    public void startOrStop(Integer status, Long id) {
+        log.info("启用禁用菜品状态: {}, {}", status, id);
+        Dish dish = Dish.builder()
+                .id(id)
+                .status(status)
+                .build();
+        dishMapper.update(dish);
+    }
+
+    /**
+     * 根据分类id查询菜品
+     *
+     * @param categoryId
+     * @return
+     */
+    public List<Dish> list(Long categoryId) {
+        log.info("根据分类id查询菜品: {}", categoryId);
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return dishMapper.list(dish);
     }
 }

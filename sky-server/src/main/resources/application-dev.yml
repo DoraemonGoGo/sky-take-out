@@ -13,6 +13,10 @@ sky:
       access-key-secret: 0YAkTDdiBQEdmnioEgrZvs0pVZogdj
       bucket-name: ft-skytakeout
 
+  wechat:
+    appid: wx97c4278caa706012
+    secret: f4431a2fc24ba95d1d03efa1e826c069
+
   redis:
     host: localhost
     port: 6379

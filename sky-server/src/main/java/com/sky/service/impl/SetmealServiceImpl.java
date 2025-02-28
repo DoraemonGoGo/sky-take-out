@@ -15,9 +15,11 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Literal;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,9 @@ public class SetmealServiceImpl implements SetmealService {
     private SetmealDishMapper setmealDishMapper;
     @Autowired
     private DishMapper dishMapper;
+    @Autowired
+    private SetmealService setmealService;
+
     /**
      * 新增套餐
      *
@@ -153,5 +158,26 @@ public class SetmealServiceImpl implements SetmealService {
                 .status(status)
                 .build();
         setmealMapper.update(setmeal);
+    }
+
+    /**
+     * 根据分类id查询套餐
+     *
+     * @param setmeal
+     * @return
+     */
+    public List<Setmeal> list(Setmeal setmeal) {
+        List<Setmeal> list = setmealMapper.list(setmeal);
+        return list;
+    }
+
+    /**
+     * 根据套餐id查询菜品
+     *
+     * @param setmealId
+     * @return
+     */
+    public List<DishItemVO> getDishItemById(Long setmealId) {
+        return setmealMapper.getDishItemBySetmealId(setmealId);
     }
 }

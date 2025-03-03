@@ -35,7 +35,7 @@ public interface ShoppingCartMapper {
     void insert(ShoppingCart shoppingCart);
 
     /**
-     * 查询购物车
+     * 清空购物车
      *
      * @return
      */

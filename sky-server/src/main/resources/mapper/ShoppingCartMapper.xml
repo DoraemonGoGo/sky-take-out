@@ -40,4 +40,12 @@
         </where>
     </delete>
 
+    <insert id="insertBatch">
+        insert into shopping_cart (name, user_id, dish_id, setmeal_id, dish_flavor, number, create_time, image, amount)
+        VALUES
+        <foreach collection="shoppingCartList" item="sc" separator=",">
+            (#{sc.name}, #{sc.userId}, #{sc.dishId}, #{sc.setmealId}, #{sc.dishFlavor}, #{sc.number}, #{sc.createTime}, #{sc.image}, #{sc.amount})
+        </foreach>
+    </insert>
+
 </mapper>

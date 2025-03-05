@@ -1,10 +1,13 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
+import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.lang.StringUtils;
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -27,6 +31,8 @@ public class ReportServiceImpl implements ReportService {
     private OrderMapper orderMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
 
     public ReportServiceImpl(OrderMapper orderMapper) {
         this.orderMapper = orderMapper;
@@ -34,12 +40,8 @@ public class ReportServiceImpl implements ReportService {
 
     public TurnoverReportVO getTurnoverStatistics(LocalDate beginTime, LocalDate endTime) {
         // 计算日期
-        List<LocalDate> dateList = new ArrayList<>();
-        dateList.add(beginTime);
-        while (beginTime.isBefore(endTime)) {
-            beginTime = beginTime.plusDays(1);
-            dateList.add(beginTime);
-        }
+        List<LocalDate> dateList = getDateList(beginTime, endTime);
+
         // 根据每天时间计算营业额
         List<Double> turnoverList = new ArrayList<>();
         Map map = new HashMap();
@@ -71,12 +73,7 @@ public class ReportServiceImpl implements ReportService {
      */
     public UserReportVO getUserStatistics(LocalDate begin, LocalDate end) {
         // 计算日期
-        List<LocalDate> dateList = new ArrayList<>();
-        dateList.add(begin);
-        while (begin.isBefore(end)) {
-            begin = begin.plusDays(1);
-            dateList.add(begin);
-        }
+        List<LocalDate> dateList = getDateList(begin, end);
 
         // 根据每天时间计算用户总数量
         List<Integer> totalUserList = new ArrayList<>();
@@ -126,12 +123,7 @@ public class ReportServiceImpl implements ReportService {
      */
     public OrderReportVO getOrdertatistics(LocalDate begin, LocalDate end) {
         // 计算日期
-        List<LocalDate> dateList = new ArrayList<>();
-        dateList.add(begin);
-        while (begin.isBefore(end)) {
-            begin = begin.plusDays(1);
-            dateList.add(begin);
-        }
+        List<LocalDate> dateList = getDateList(begin, end);
 
         // 根据每天时间计算订单总数
         List<Integer> totalOrderList = new ArrayList<>();
@@ -182,5 +174,44 @@ public class ReportServiceImpl implements ReportService {
         map.put("status", status);
         Integer count = orderMapper.countByMap(map);
         return count == null ? 0 : count;
+    }
+
+    /**
+     * 销量排名top10
+     *
+     * @param begin
+     * @param end
+     * @return
+     */
+    public SalesTop10ReportVO getSaleTop10(LocalDate begin, LocalDate end) {
+        // 计算日期
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+
+        List<GoodsSalesDTO> goodsSalesList = orderMapper.getSalesTop10(beginTime, endTime);
+        String names = goodsSalesList.stream().map(GoodsSalesDTO::getName).collect(Collectors.joining(","));
+        String numbers = goodsSalesList.stream().map(GoodsSalesDTO::getNumber).map(String::valueOf).collect(Collectors.joining(","));
+
+        return SalesTop10ReportVO.builder()
+                .nameList(names)
+                .numberList(numbers)
+                .build();
+    }
+
+    /**
+     * 计算日期
+     *
+     * @param begin
+     * @param end
+     * @return
+     */
+    public List<LocalDate> getDateList(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = new ArrayList<>();
+        dateList.add(begin);
+        while (begin.isBefore(end)) {
+            begin = begin.plusDays(1);
+            dateList.add(begin);
+        }
+        return dateList;
     }
 }

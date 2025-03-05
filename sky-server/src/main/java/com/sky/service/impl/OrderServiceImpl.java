@@ -352,7 +352,7 @@ public class OrderServiceImpl implements OrderService {
             String dishFlavor = x.getDishFlavor();
             String orderDish = "";
             if (dishFlavor != null) {
-                orderDish = x.getName() + "*" + x.getNumber() + "(" + x.getDishFlavor() + ");";
+                orderDish = x.getName() + "(" + x.getDishFlavor() + ")" + "*" + x.getNumber() + ";";
             } else {
                 orderDish = x.getName() + "*" + x.getNumber() + ";";
             }

@@ -21,17 +21,15 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
-import io.micrometer.core.instrument.binder.BaseUnits;
+import com.sky.websocket.WebSocketServer;
 //import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +59,8 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
 
     /**
@@ -191,13 +191,13 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(orders);
         //通过websocket向客户端浏览器推送消息type orderId content
-//        Map map = new HashMap();
-//        map.put("type",1);//1.来电提醒 2.客户催单
-//        map.put("orderId", orders.getId());
-//        map.put("content", "订单号："+outTradeNo);
-//
-//        String json = JSON.toJSONString(map);
-//        webSocketServer.sendToAllClient(json);
+        Map map = new HashMap();
+        map.put("type",1);//1.来单提醒 2.客户催单
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号："+outTradeNo);
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
 
     }
 
@@ -411,6 +411,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setId(ordersRejectionDTO.getId());
         orders.setPayStatus(Orders.REFUND);
         orders.setCancelTime(LocalDateTime.now());
+        orders.setCancelReason(ordersRejectionDTO.getRejectionReason());
         orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
         orderMapper.update(orders);
     }
@@ -462,6 +463,25 @@ public class OrderServiceImpl implements OrderService {
         orders.setId(orderId);
         orders.setStatus(Orders.COMPLETED);
         orderMapper.update(orders);
+    }
+
+    /**
+     * 客户催单
+     */
+    public void reminder(Long orderId) {
+        Orders orderDB = orderMapper.getById(orderId);
+        if (orderDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        //通过websocket向客户端浏览器推送消息type orderId content
+        Map map = new HashMap();
+        map.put("type",2);//1.来单提醒 2.客户催单
+        map.put("orderId", orderId);
+        map.put("content", "订单号："+orderDB.getNumber());
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     /**

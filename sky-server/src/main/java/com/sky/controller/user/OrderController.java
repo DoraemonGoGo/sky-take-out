@@ -1,10 +1,7 @@
 package com.sky.controller.user;
 
-import com.github.pagehelper.PageHelper;
-import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
-import com.sky.entity.AddressBook;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
@@ -16,8 +13,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController("userOrderController")
 @RequestMapping("/user/order")
@@ -58,7 +53,7 @@ public class OrderController {
     }
 
     /**
-     * 查询当前用户的所有地址簿
+     * 查询当前用户的所有订单
      * @param page
      * @param pageSize
      * @param status
@@ -108,6 +103,18 @@ public class OrderController {
     public Result repetition(@PathVariable("id") Long orderId) {
         log.info("再来一单:{}", orderId);
         orderService.repetition(orderId);
+        return Result.success();
+    }
+
+    /**
+     * 客户催单
+     *
+     */
+    @GetMapping("/reminder/{id}")
+    @ApiOperation("客户催单")
+    public Result reminder(@PathVariable("id") Long orderId) {
+        log.info("客户催单:{}", orderId);
+        orderService.reminder(orderId);
         return Result.success();
     }
 }

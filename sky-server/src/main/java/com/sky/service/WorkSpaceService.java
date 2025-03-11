@@ -5,6 +5,8 @@ import com.sky.vo.DishOverViewVO;
 import com.sky.vo.OrderOverViewVO;
 import com.sky.vo.SetmealOverViewVO;
 
+import java.time.LocalDateTime;
+
 public interface WorkSpaceService {
 
     /**
@@ -12,7 +14,7 @@ public interface WorkSpaceService {
      *
      * @return
      */
-    BusinessDataVO businessData();
+    BusinessDataVO businessData(LocalDateTime begin, LocalDateTime end);
 
     /**
      * 查询订单管理数据

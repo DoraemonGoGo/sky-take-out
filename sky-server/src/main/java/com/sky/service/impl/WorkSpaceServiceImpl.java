@@ -37,9 +37,7 @@ public class WorkSpaceServiceImpl implements WorkSpaceService {
      *
      * @return
      */
-    public BusinessDataVO businessData() {
-        LocalDateTime begin = LocalDateTime.now().with(LocalTime.MIN);
-        LocalDateTime end = LocalDateTime.now().with(LocalTime.MAX);
+    public BusinessDataVO businessData(LocalDateTime begin, LocalDateTime end) {
         Map map = new HashMap();
         map.put("begin", begin);
         map.put("end", end);
